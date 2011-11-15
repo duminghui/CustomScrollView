@@ -14,43 +14,39 @@
 			android:text="页眉"
 			android:textSize="25dip"/>
 	</LinearLayout>
-	<custom.android.widget.CustomScrollView
+	<custom.android.widget.CustomScrollView2
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:layout_weight="1"
+		android:orientation="vertical"
 		android:paddingBottom="5dip"
 		android:paddingTop="5dip">
-		<LinearLayout
+		<TextView
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical">
-			<TextView
+			android:text="@string/hello"/>
+		<HorizontalScrollView
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content">
+			<ListView
+				android:id="@+id/lv"
 				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/hello"/>
-			<HorizontalScrollView
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content">
-				<ListView
-					android:id="@+id/lv"
-					android:layout_width="fill_parent"
-					android:layout_height="200dip"
-					android:background="#ffffff00"
-					android:cacheColorHint="#00000000">
-				</ListView>
-			</HorizontalScrollView>
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="150dip"
-				android:background="#ff00ffff">
-			</LinearLayout>
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="150dip"
-				android:background="#ffff00ff">
-			</LinearLayout>
+				android:layout_height="200dip"
+				android:background="#ffffff00"
+				android:cacheColorHint="#00000000">
+			</ListView>
+		</HorizontalScrollView>
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="150dip"
+			android:background="#ff00ffff">
 		</LinearLayout>
-	</custom.android.widget.CustomScrollView>
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="150dip"
+			android:background="#ffff00ff">
+		</LinearLayout>
+	</custom.android.widget.CustomScrollView2>
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
