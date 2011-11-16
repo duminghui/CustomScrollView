@@ -13,7 +13,7 @@
 	<description>scrollview</description>
 	<properties>
 		<android.sdk.path>${env.ANDROID_HOME}</android.sdk.path>
-		<android.sdk.platform>7</android.sdk.platform>
+		<android.sdk.platform>3</android.sdk.platform>
 		<java.version>1.6</java.version>
 		<encoding>UTF-8</encoding>
 	</properties>
