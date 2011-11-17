@@ -1,8 +1,10 @@
 package android.scrollview.test;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.scrollview.test.AppActivity.ListAdpater.ListViewHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -10,76 +12,111 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import custom.android.widget.ScrollListView;
 import custom.android.widget.ScrollListView.ScrollListViewAdapter;
+import custom.android.widget.ScrollListView.ScrollListViewAdapter.ViewHolder;
 
-public class AppActivity extends Activity {
+public class AppActivity extends Activity
+{
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main3);
 		ScrollListView slv = (ScrollListView) findViewById(R.id.slv);
-		TextView tv = new TextView(this);
-		tv.setText("AAAAAAAAAAAAAAAA");
-		tv.setBackgroundColor(Color.GREEN);
-		LinearLayout ll2 = new LinearLayout(this);
-		ll2.addView(tv, 100, LayoutParams.WRAP_CONTENT);
-		LinearLayout ll = new LinearLayout(this);
-		TextView tv2 = new TextView(this);
-		tv2.setText("vBBBBBBBBBBBBBBBBBBBBBBCCCCCCCCCCCCCCCCCCC");
-		tv2.setBackgroundColor(Color.YELLOW);
-		ll.addView(tv2, 500, LayoutParams.WRAP_CONTENT);
-		slv.setHeaderView(ll2, ll);
-		slv.setListAdapter(new ListAdpater());
+		slv.setAdapter(new ListAdpater());
 	}
 
-	public class ListAdpater extends ScrollListViewAdapter {
+	public static class ListAdpater extends
+	        ScrollListViewAdapter<ListViewHolder>
+	{
 		@Override
-		public int getCount() {
+		public int getCount()
+		{
 			return 50;
 		}
 
 		@Override
-		public Object getItem(int position) {
+		public Object getItem(int position)
+		{
 			return null;
 		}
 
 		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
+		public long getItemId(int position)
+		{
 			return 0;
 		}
 
 		@Override
-		protected void setListViewData(int postion, ViewHolder viewHolder) {
+		protected void setListViewData(int postion, ListViewHolder viewHolder)
+		{
 
 		}
 
 		@Override
-		protected View createFixListView(int postion, ViewHolder viewHolder,
-				ViewGroup parent) {
+		protected View createListFixView(int postion,
+		        ListViewHolder viewHolder, ViewGroup parent)
+		{
 			LinearLayout ll = new LinearLayout(parent.getContext());
 
 			TextView tv = new TextView(parent.getContext());
-			tv.setText("AAAAAAAAAAB");
+			tv.setText("Text1");
 			ll.addView(tv, 100, LayoutParams.WRAP_CONTENT);
 			return ll;
 		}
 
 		@Override
-		protected View createMoveListView(int postion, ViewHolder viewHolder,
-				ViewGroup parent) {
-			TextView tv = new TextView(parent.getContext());
-			tv.setText("aaaaAAAAAAAAAACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-			tv.setBackgroundColor(Color.BLUE);
+		protected View createListMoveView(int postion,
+		        ListViewHolder viewHolder, ViewGroup parent)
+		{
 			LinearLayout ll = new LinearLayout(parent.getContext());
-			ll.addView(tv, 400, LayoutParams.WRAP_CONTENT);
+			TextView tv2 = null;
+			for (int index = 0; index < 5; index++)
+			{
+				tv2 = new TextView(parent.getContext());
+				tv2.setText("content:" + index);
+				tv2.setBackgroundColor(Color.YELLOW);
+				ll.addView(tv2, 150, LayoutParams.WRAP_CONTENT);
+			}
+			return ll;
+		}
+
+		public static class ListViewHolder extends ViewHolder
+		{
+
+		}
+
+		@Override
+		protected View createTitleFixView(Context context)
+		{
+			TextView tv = new TextView(context);
+			tv.setText("AAAAAAAAAAAAAAAA");
+			tv.setBackgroundColor(Color.GREEN);
+			LinearLayout ll2 = new LinearLayout(context);
+			ll2.addView(tv, 100, LayoutParams.WRAP_CONTENT);
+			return ll2;
+		}
+
+		@Override
+		protected View createTitleMoveView(Context context)
+		{
+			LinearLayout ll = new LinearLayout(context);
+			TextView tv2 = null;
+			for (int index = 0; index < 5; index++)
+			{
+				tv2 = new TextView(context);
+				tv2.setText("title:" + index);
+				tv2.setBackgroundColor(Color.YELLOW);
+				ll.addView(tv2, 150, LayoutParams.WRAP_CONTENT);
+			}
 			return ll;
 		}
 
 		@Override
-		protected ViewHolder getViewHolder() {
+		protected ListViewHolder getViewHolder(int position)
+		{
+			// TODO Auto-generated method stub
 			return null;
 		}
-
 	}
 }

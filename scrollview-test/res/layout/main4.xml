@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:slv="http://schemas.android.com/apk/res/android.scrollview.test"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
+	android:layout_height="wrap_content"
 	android:background="#ffffffff"
 	android:orientation="vertical">
-	<custom.android.widget.ScrollListView
-		android:id="@+id/slv"
+	<android.scrollview.test.TestView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		slv:listview_divider="#ff0000ff"
-		slv:listview_dividerHeight="0.5dip"
-		slv:listview_height="100dip"
+		android:background="#ff00ff00"
 		android:padding="5dip">
-	</custom.android.widget.ScrollListView>
+	</android.scrollview.test.TestView>
 </LinearLayout>
