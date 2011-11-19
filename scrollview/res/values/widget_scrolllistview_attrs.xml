@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<declare-styleable name="ScrollListView">
+		<attr format="dimension" name="moveSlop"/>
+		<!--
 		<attr format="dimension" name="listview_height">
 			<enum name="match_parent" value="-1"/>
 			<enum name="wrap_content" value="-2"/>
 		</attr>
 		<attr format="reference|color" name="listview_divider"/>
 		<attr format="dimension" name="listview_dividerHeight"/>
+		-->
 	</declare-styleable>
 </resources>

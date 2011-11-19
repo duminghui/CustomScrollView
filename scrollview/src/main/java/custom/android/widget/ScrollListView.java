@@ -8,13 +8,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.MeasureSpec;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -29,13 +26,11 @@ public class ScrollListView extends RelativeLayout
 {
 	private LinearLayout ll;
 	private Context context;
+	private ListView lv;
 	private int iFixViewWidth;
 	private int iMoveableViewWidth;
 	private View viewMoveableHeader;
 	private List<View> viewMoveableListViews;
-	private int iListViewHeight = -2;
-	private Drawable listViewDivider = null;
-	private int listViewDividerHeight = 1;
 	private int moveSlop = 5;
 
 	public ScrollListView(Context context)
@@ -58,12 +53,8 @@ public class ScrollListView extends RelativeLayout
 	{
 		TypedArray a = c.obtainStyledAttributes(attrs,
 		        R.styleable.ScrollListView);
-		iListViewHeight = a.getLayoutDimension(
-		        R.styleable.ScrollListView_listview_height, -2);
-		listViewDivider = a
-		        .getDrawable(R.styleable.ScrollListView_listview_divider);
-		listViewDividerHeight = a.getDimensionPixelSize(
-		        R.styleable.ScrollListView_listview_dividerHeight, 1);
+		moveSlop = a.getDimensionPixelSize(R.styleable.ScrollListView_moveSlop,
+		        5);
 		a.recycle();
 	}
 
@@ -71,62 +62,52 @@ public class ScrollListView extends RelativeLayout
 	{
 		ll = new LinearLayout(context);
 		ll.setOrientation(LinearLayout.VERTICAL);
-		LayoutParams scrollListLp = new LayoutParams(LayoutParams.WRAP_CONTENT,
-		        LayoutParams.WRAP_CONTENT);
-		addView(ll, scrollListLp);
+		addView(ll, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	}
 
-	private void setHeaderView(
+	public void setCreatorAndAdapter(ScrollListViewCreator creator,
 	        ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
+		setCreator(creator);
+		setAdapter(adapter);
+	}
+
+	public void setCreator(ScrollListViewCreator creator)
+	{
 		LinearLayout llHeader = new LinearLayout(context);
-		View fixView = adapter.createTitleFixView(context);
-		fixView.measure(
-		        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-		        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-		this.iFixViewWidth = fixView.getMeasuredWidth();
-		View moveableView = adapter.createTitleMoveView(context);
-		moveableView.measure(
-		        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-		        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-		this.iMoveableViewWidth = moveableView.getMeasuredWidth();
+		View fixView = creator.createTitleFixView(context);
+		this.iFixViewWidth = getViewMeasuredWidth(fixView);
+		View moveableView = creator.createTitleMoveView(context);
+		this.iMoveableViewWidth = getViewMeasuredWidth(moveableView);
 		llHeader.addView(fixView);
 		viewMoveableHeader = moveableView;
 		llHeader.addView(moveableView);
 		ll.addView(llHeader);
+		lv = creator.creatorListView(context);
+		ll.addView(lv);
 	}
 
 	public void setAdapter(ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
-		setHeaderView(adapter);
-		ListView lv = new ListView(context);
-		if (listViewDivider != null)
-		{
-			lv.setDivider(listViewDivider);
-		}
-		lv.setDividerHeight(listViewDividerHeight);
-		lv.setCacheColorHint(0x00000000);
-		lv.setVerticalScrollBarEnabled(false);
-		lv.setFadingEdgeLength(0);
-		ll.addView(lv, LayoutParams.FILL_PARENT, iListViewHeight);
 		lv.setAdapter(adapter);
 		viewMoveableListViews = adapter.getMoveViews();
 		List<View> fixViews = adapter.getFixViews();
 		for (View view : fixViews)
 		{
-			view.measure(
-			        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-			        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-			iFixViewWidth = Math.max(iFixViewWidth, view.getMeasuredWidth());
+			iFixViewWidth = Math.max(iFixViewWidth, getViewMeasuredWidth(view));
 		}
 		for (View view : viewMoveableListViews)
 		{
-			view.measure(
-			        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-			        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 			iMoveableViewWidth = Math.max(iMoveableViewWidth,
-			        view.getMeasuredWidth());
+			        getViewMeasuredWidth(view));
 		}
+	}
+
+	private int getViewMeasuredWidth(View view)
+	{
+		view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+		        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		return view.getMeasuredWidth();
 	}
 
 	private int iLastMotionY;
@@ -226,46 +207,74 @@ public class ScrollListView extends RelativeLayout
 		                iMoveableViewWidth
 		                        - (getWidth() - getPaddingLeft()
 		                                - getPaddingRight() - iFixViewWidth));
-		System.out.println(scrollRange + ":" + computeHorizontalScrollRange());
+		// System.out.println(scrollRange + ":" +
+		// computeHorizontalScrollRange());
 		return scrollRange;
 	}
 
-	@Override
-	protected void measureChild(View child, int parentWidthMeasureSpec,
-	        int parentHeightMeasureSpec)
+	// @Override
+	// protected void measureChild(View child, int parentWidthMeasureSpec,
+	// int parentHeightMeasureSpec)
+	// {
+	// ViewGroup.LayoutParams lp = child.getLayoutParams();
+	//
+	// int childWidthMeasureSpec;
+	// int childHeightMeasureSpec;
+	//
+	// // childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
+	// // getPaddingLeft() + getPaddingRight(), lp.width);
+	//
+	// childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0,
+	// MeasureSpec.UNSPECIFIED);
+	//
+	// childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
+	// MeasureSpec.UNSPECIFIED);
+	//
+	// child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+	// }
+	//
+	// @Override
+	// protected void measureChildWithMargins(View child,
+	// int parentWidthMeasureSpec, int widthUsed,
+	// int parentHeightMeasureSpec, int heightUsed)
+	// {
+	// final MarginLayoutParams lp = (MarginLayoutParams) child
+	// .getLayoutParams();
+	//
+	// final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
+	// lp.leftMargin + lp.rightMargin, MeasureSpec.UNSPECIFIED);
+	// final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
+	// lp.topMargin + lp.bottomMargin, MeasureSpec.UNSPECIFIED);
+	// System.out
+	// .println(childWidthMeasureSpec + "," + childHeightMeasureSpec);
+	// child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+	// }
+
+	public static abstract class ScrollListViewCreator
 	{
-		ViewGroup.LayoutParams lp = child.getLayoutParams();
+		/**
+		 * 列头固定列
+		 * 
+		 * @param context
+		 * @return
+		 */
+		protected abstract View createTitleFixView(Context context);
 
-		int childWidthMeasureSpec;
-		int childHeightMeasureSpec;
+		/**
+		 * 列头可移动列
+		 * 
+		 * @param context
+		 * @return
+		 */
+		protected abstract View createTitleMoveView(Context context);
 
-		// childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
-		// getPaddingLeft() + getPaddingRight(), lp.width);
+		/**
+		 * 创建ListView
+		 * 
+		 * @return
+		 */
+		protected abstract ListView creatorListView(Context context);
 
-		childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-		        MeasureSpec.UNSPECIFIED);
-
-		childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-		        MeasureSpec.UNSPECIFIED);
-
-		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-	}
-
-	@Override
-	protected void measureChildWithMargins(View child,
-	        int parentWidthMeasureSpec, int widthUsed,
-	        int parentHeightMeasureSpec, int heightUsed)
-	{
-		final MarginLayoutParams lp = (MarginLayoutParams) child
-		        .getLayoutParams();
-
-		final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-		        lp.leftMargin + lp.rightMargin, MeasureSpec.UNSPECIFIED);
-		final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
-		        lp.topMargin + lp.bottomMargin, MeasureSpec.UNSPECIFIED);
-		System.out
-		        .println(childWidthMeasureSpec + "," + childHeightMeasureSpec);
-		child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 	}
 
 	public static abstract class ScrollListViewAdapter<T extends ViewHolder>
@@ -293,10 +302,10 @@ public class ScrollListView extends RelativeLayout
 			{
 				viewHolder = getViewHolder(position);
 				LinearLayout ll = new LinearLayout(parent.getContext());
-				View viewFix = createListFixView(position, viewHolder, ll);
+				View viewFix = getListFixView(position, viewHolder, ll);
 				lstFixView.add(viewFix);
 				ll.addView(viewFix);
-				View viewMove = createListMoveView(position, viewHolder, ll);
+				View viewMove = getListMoveView(position, viewHolder, ll);
 				lstMoveView.add(viewMove);
 				ll.addView(viewMove);
 				convertView = ll;
@@ -309,18 +318,42 @@ public class ScrollListView extends RelativeLayout
 			return convertView;
 		}
 
-		protected abstract View createTitleFixView(Context context);
-
-		protected abstract View createTitleMoveView(Context context);
-
+		/**
+		 * 设置已经在ViewHolder存在的列表数据
+		 * 
+		 * @param position
+		 * @param viewHolder
+		 */
 		protected abstract void setListViewData(int position, T viewHolder);
 
-		protected abstract View createListFixView(int position, T viewHolder,
+		/**
+		 * 获取列表项中固定的列
+		 * 
+		 * @param position
+		 * @param viewHolder
+		 * @param parent
+		 * @return
+		 */
+		protected abstract View getListFixView(int position, T viewHolder,
 		        ViewGroup parent);
 
-		protected abstract View createListMoveView(int position, T viewHolder,
+		/**
+		 * 获取列表项中可移动的列
+		 * 
+		 * @param position
+		 * @param viewHolder
+		 * @param parent
+		 * @return
+		 */
+		protected abstract View getListMoveView(int position, T viewHolder,
 		        ViewGroup parent);
 
+		/**
+		 * 获取ViewHolder
+		 * 
+		 * @param position
+		 * @return
+		 */
 		protected abstract T getViewHolder(int position);
 
 		public static abstract class ViewHolder
