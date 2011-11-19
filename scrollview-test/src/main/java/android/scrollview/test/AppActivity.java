@@ -25,8 +25,7 @@ public class AppActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main3);
 		ScrollListView slv = (ScrollListView) findViewById(R.id.slv);
-		slv.setCreator(new ViewCreator());
-		slv.setAdapter(new ListAdpater());
+		slv.setCreatorAndAdapter(new ViewCreator(), new ListAdpater());
 	}
 
 	private static class ViewCreator extends ScrollListViewCreator
@@ -58,7 +57,7 @@ public class AppActivity extends Activity
 		}
 
 		@Override
-		protected ListView creatorListView(Context context)
+		protected ListView createListView(Context context)
 		{
 			ListView lv = new ListView(context);
 			lv.setDividerHeight(1);

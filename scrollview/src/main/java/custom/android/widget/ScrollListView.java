@@ -72,7 +72,7 @@ public class ScrollListView extends RelativeLayout
 		setAdapter(adapter);
 	}
 
-	public void setCreator(ScrollListViewCreator creator)
+	private void setCreator(ScrollListViewCreator creator)
 	{
 		LinearLayout llHeader = new LinearLayout(context);
 		View fixView = creator.createTitleFixView(context);
@@ -83,11 +83,11 @@ public class ScrollListView extends RelativeLayout
 		viewMoveableHeader = moveableView;
 		llHeader.addView(moveableView);
 		ll.addView(llHeader);
-		lv = creator.creatorListView(context);
+		lv = creator.createListView(context);
 		ll.addView(lv);
 	}
 
-	public void setAdapter(ScrollListViewAdapter<? extends ViewHolder> adapter)
+	private void setAdapter(ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
 		lv.setAdapter(adapter);
 		viewMoveableListViews = adapter.getMoveViews();
@@ -273,7 +273,7 @@ public class ScrollListView extends RelativeLayout
 		 * 
 		 * @return
 		 */
-		protected abstract ListView creatorListView(Context context);
+		protected abstract ListView createListView(Context context);
 
 	}
 
