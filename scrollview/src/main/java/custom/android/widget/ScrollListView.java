@@ -65,29 +65,29 @@ public class ScrollListView extends RelativeLayout
 		addView(ll, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	}
 
-	public void setCreatorAndAdapter(ScrollListViewCreator creator,
-	        ScrollListViewAdapter<? extends ViewHolder> adapter)
+	public void setAdapter(ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
-		setCreator(creator);
-		setAdapter(adapter);
+		initView(adapter);
+		setListAdapter(adapter);
 	}
 
-	private void setCreator(ScrollListViewCreator creator)
+	private void initView(ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
 		LinearLayout llHeader = new LinearLayout(context);
-		View fixView = creator.createTitleFixView(context);
-		this.iFixViewWidth = getViewMeasuredWidth(fixView);
-		View moveableView = creator.createTitleMoveView(context);
-		this.iMoveableViewWidth = getViewMeasuredWidth(moveableView);
+		View fixView = adapter.createTitleFixView(context);
+		iFixViewWidth = getViewMeasuredWidth(fixView);
+		View moveableView = adapter.createTitleMoveView(context);
+		iMoveableViewWidth = getViewMeasuredWidth(moveableView);
 		llHeader.addView(fixView);
 		viewMoveableHeader = moveableView;
 		llHeader.addView(moveableView);
 		ll.addView(llHeader);
-		lv = creator.createListView(context);
+		lv = adapter.createListView(context);
 		ll.addView(lv);
 	}
 
-	private void setAdapter(ScrollListViewAdapter<? extends ViewHolder> adapter)
+	private void setListAdapter(
+	        ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
 		lv.setAdapter(adapter);
 		viewMoveableListViews = adapter.getMoveViews();
@@ -136,7 +136,14 @@ public class ScrollListView extends RelativeLayout
 				{
 					if (Math.abs(offsetMoveX) > moveSlop)
 					{
-						iTransferX += offsetX;
+						if (iTransferX <= 0
+						        || iTransferX >= getHorizontalScrollRange())
+						{
+							iTransferX += (offsetX / 2);
+						} else
+						{
+							iTransferX += offsetX;
+						}
 						srcoll(iTransferX);
 						iLastMotionX = x;
 						return true;
@@ -163,7 +170,13 @@ public class ScrollListView extends RelativeLayout
 			case MotionEvent.ACTION_MOVE:
 				int x = (int) event.getX();
 				int offsetX = iLastMotionX - x;
-				iTransferX += offsetX;
+				if (iTransferX <= 0 || iTransferX >= getHorizontalScrollRange())
+				{
+					iTransferX += (offsetX / 2);
+				} else
+				{
+					iTransferX += offsetX;
+				}
 				srcoll(iTransferX);
 				iLastMotionX = x;
 				break;
@@ -207,74 +220,7 @@ public class ScrollListView extends RelativeLayout
 		                iMoveableViewWidth
 		                        - (getWidth() - getPaddingLeft()
 		                                - getPaddingRight() - iFixViewWidth));
-		// System.out.println(scrollRange + ":" +
-		// computeHorizontalScrollRange());
 		return scrollRange;
-	}
-
-	// @Override
-	// protected void measureChild(View child, int parentWidthMeasureSpec,
-	// int parentHeightMeasureSpec)
-	// {
-	// ViewGroup.LayoutParams lp = child.getLayoutParams();
-	//
-	// int childWidthMeasureSpec;
-	// int childHeightMeasureSpec;
-	//
-	// // childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,
-	// // getPaddingLeft() + getPaddingRight(), lp.width);
-	//
-	// childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-	// MeasureSpec.UNSPECIFIED);
-	//
-	// childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-	// MeasureSpec.UNSPECIFIED);
-	//
-	// child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-	// }
-	//
-	// @Override
-	// protected void measureChildWithMargins(View child,
-	// int parentWidthMeasureSpec, int widthUsed,
-	// int parentHeightMeasureSpec, int heightUsed)
-	// {
-	// final MarginLayoutParams lp = (MarginLayoutParams) child
-	// .getLayoutParams();
-	//
-	// final int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-	// lp.leftMargin + lp.rightMargin, MeasureSpec.UNSPECIFIED);
-	// final int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
-	// lp.topMargin + lp.bottomMargin, MeasureSpec.UNSPECIFIED);
-	// System.out
-	// .println(childWidthMeasureSpec + "," + childHeightMeasureSpec);
-	// child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-	// }
-
-	public static abstract class ScrollListViewCreator
-	{
-		/**
-		 * 列头固定列
-		 * 
-		 * @param context
-		 * @return
-		 */
-		protected abstract View createTitleFixView(Context context);
-
-		/**
-		 * 列头可移动列
-		 * 
-		 * @param context
-		 * @return
-		 */
-		protected abstract View createTitleMoveView(Context context);
-
-		/**
-		 * 创建ListView
-		 * 
-		 * @return
-		 */
-		protected abstract ListView createListView(Context context);
-
 	}
 
 	public static abstract class ScrollListViewAdapter<T extends ViewHolder>
@@ -302,10 +248,10 @@ public class ScrollListView extends RelativeLayout
 			{
 				viewHolder = getViewHolder(position);
 				LinearLayout ll = new LinearLayout(parent.getContext());
-				View viewFix = getListFixView(position, viewHolder, ll);
+				View viewFix = createListItemFixView(position, viewHolder, ll);
 				lstFixView.add(viewFix);
 				ll.addView(viewFix);
-				View viewMove = getListMoveView(position, viewHolder, ll);
+				View viewMove = createListItemMoveView(position, viewHolder, ll);
 				lstMoveView.add(viewMove);
 				ll.addView(viewMove);
 				convertView = ll;
@@ -334,8 +280,8 @@ public class ScrollListView extends RelativeLayout
 		 * @param parent
 		 * @return
 		 */
-		protected abstract View getListFixView(int position, T viewHolder,
-		        ViewGroup parent);
+		protected abstract View createListItemFixView(int position,
+		        T viewHolder, ViewGroup parent);
 
 		/**
 		 * 获取列表项中可移动的列
@@ -345,8 +291,31 @@ public class ScrollListView extends RelativeLayout
 		 * @param parent
 		 * @return
 		 */
-		protected abstract View getListMoveView(int position, T viewHolder,
-		        ViewGroup parent);
+		protected abstract View createListItemMoveView(int position,
+		        T viewHolder, ViewGroup parent);
+
+		/**
+		 * 创建列头固定视图
+		 * 
+		 * @param context
+		 * @return
+		 */
+		protected abstract View createTitleFixView(Context context);
+
+		/**
+		 * 创建列头可移动视图
+		 * 
+		 * @param context
+		 * @return
+		 */
+		protected abstract View createTitleMoveView(Context context);
+
+		/**
+		 * 创建ListView
+		 * 
+		 * @return
+		 */
+		protected abstract ListView createListView(Context context);
 
 		/**
 		 * 获取ViewHolder
