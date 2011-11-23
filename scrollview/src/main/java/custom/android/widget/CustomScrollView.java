@@ -42,7 +42,6 @@ public class CustomScrollView extends FrameLayout
 				{
 					iTransferY += offsetY;
 				}
-				iTransferY += offsetY;
 				scrollTo(0, iTransferY);
 				iLastMotionY = (int) event.getY();
 				break;
