@@ -14,43 +14,57 @@
 			android:text="页眉"
 			android:textSize="25dip"/>
 	</LinearLayout>
-	<custom.android.widget.CustomScrollView
+	<LinearLayout
 		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:paddingBottom="5dip"
-		android:paddingTop="5dip">
+		android:layout_height="fill_parent">
 		<LinearLayout
+			android:layout_width="4dip"
+			android:layout_height="fill_parent"
+			android:background="#ff00ff00">
+		</LinearLayout>
+		<custom.android.widget.CustomScrollView
 			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical">
-			<TextView
+			android:layout_height="fill_parent"
+			android:layout_weight="1"
+			android:paddingBottom="6dip"
+			android:paddingTop="7dip">
+			<LinearLayout
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/hello"/>
-			<HorizontalScrollView
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content">
-				<ListView
-					android:id="@+id/lv"
+				android:orientation="vertical">
+				<TextView
 					android:layout_width="fill_parent"
-					android:layout_height="200dip"
-					android:background="#ffffff00"
-					android:cacheColorHint="#00000000">
-				</ListView>
-			</HorizontalScrollView>
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="150dip"
-				android:background="#ff00ffff">
+					android:layout_height="wrap_content"
+					android:text="@string/hello"/>
+				<HorizontalScrollView
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content">
+					<ListView
+						android:id="@+id/lv"
+						android:layout_width="fill_parent"
+						android:layout_height="200dip"
+						android:background="#ffffff00"
+						android:cacheColorHint="#00000000">
+					</ListView>
+				</HorizontalScrollView>
+				<LinearLayout
+					android:layout_width="fill_parent"
+					android:layout_height="150dip"
+					android:background="#ff00ffff">
+				</LinearLayout>
+				<LinearLayout
+					android:layout_width="fill_parent"
+					android:layout_height="150dip"
+					android:background="#ffff00ff">
+				</LinearLayout>
 			</LinearLayout>
-			<LinearLayout
-				android:layout_width="fill_parent"
-				android:layout_height="150dip"
-				android:background="#ffff00ff">
-			</LinearLayout>
+		</custom.android.widget.CustomScrollView>
+		<LinearLayout
+			android:layout_width="5dip"
+			android:layout_height="fill_parent"
+			android:background="#ff00ff00">
 		</LinearLayout>
-	</custom.android.widget.CustomScrollView>
+	</LinearLayout>
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
