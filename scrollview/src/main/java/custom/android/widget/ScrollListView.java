@@ -16,7 +16,6 @@ import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import custom.android.widget.ScrollListView.ScrollListViewAdapter.ViewHolder;
 
 /**
  * @author duminghui
@@ -325,9 +324,10 @@ public class ScrollListView extends RelativeLayout
 		 */
 		protected abstract T getViewHolder(int position);
 
-		public static abstract class ViewHolder
-		{
+	}
 
-		}
+	public static abstract class ViewHolder
+	{
+
 	}
 }

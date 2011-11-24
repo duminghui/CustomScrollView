@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.scrollview.test.AppActivity.ListAdpater.ListViewHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -13,7 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import custom.android.widget.ScrollListView;
 import custom.android.widget.ScrollListView.ScrollListViewAdapter;
-import custom.android.widget.ScrollListView.ScrollListViewAdapter.ViewHolder;
+import custom.android.widget.ScrollListView.ViewHolder;
 
 public class AppActivity extends Activity
 {
@@ -135,9 +134,10 @@ public class AppActivity extends Activity
 			return null;
 		}
 
-		public static class ListViewHolder extends ViewHolder
-		{
+	}
 
-		}
+	public static class ListViewHolder extends ViewHolder
+	{
+
 	}
 }

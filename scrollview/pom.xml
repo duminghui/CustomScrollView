@@ -34,7 +34,6 @@
 			<artifactId>android</artifactId>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<pluginManagement>
 			<plugins>
