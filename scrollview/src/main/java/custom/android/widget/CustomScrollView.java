@@ -25,7 +25,7 @@ public class CustomScrollView extends FrameLayout {
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
 		int action = ev.getAction();
 		if (action == MotionEvent.ACTION_DOWN) {
-			// debug(0);
+//			 debug(0);
 			Rect rect = new Rect();
 			getWindowVisibleDisplayFrame(rect);
 			System.out.println(rect.toShortString());

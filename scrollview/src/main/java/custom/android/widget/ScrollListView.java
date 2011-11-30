@@ -72,16 +72,16 @@ public class ScrollListView extends RelativeLayout
 
 	private void initView(ScrollListViewAdapter<? extends ViewHolder> adapter)
 	{
-		LinearLayout llHeader = new LinearLayout(context);
-		View fixView = adapter.createTitleFixView(context);
+		ViewGroup vg = adapter.createHeaderLayout();
+		View fixView = adapter.createHeaderFixView();
 		iFixViewWidth = getViewMeasuredWidth(fixView);
-		View moveableView = adapter.createTitleMoveView(context);
+		View moveableView = adapter.createHeaderMoveView();
 		iMoveableViewWidth = getViewMeasuredWidth(moveableView);
-		llHeader.addView(fixView);
+		vg.addView(fixView);
 		viewMoveableHeader = moveableView;
-		llHeader.addView(moveableView);
-		ll.addView(llHeader);
-		lv = adapter.createListView(context);
+		vg.addView(moveableView);
+		ll.addView(vg);
+		lv = adapter.createListView();
 		ll.addView(lv);
 	}
 
@@ -246,14 +246,14 @@ public class ScrollListView extends RelativeLayout
 			if (convertView == null)
 			{
 				viewHolder = getViewHolder(position);
-				LinearLayout ll = new LinearLayout(parent.getContext());
-				View viewFix = createListItemFixView(position, viewHolder, ll);
+				ViewGroup vg = createListItemLayout();
+				View viewFix = createListItemFixView(position, viewHolder);
 				lstFixView.add(viewFix);
-				ll.addView(viewFix);
-				View viewMove = createListItemMoveView(position, viewHolder, ll);
+				vg.addView(viewFix);
+				View viewMove = createListItemMoveView(position, viewHolder);
 				lstMoveView.add(viewMove);
-				ll.addView(viewMove);
-				convertView = ll;
+				vg.addView(viewMove);
+				convertView = vg;
 				convertView.setTag(viewHolder);
 			} else
 			{
@@ -272,7 +272,14 @@ public class ScrollListView extends RelativeLayout
 		protected abstract void setListViewData(int position, T viewHolder);
 
 		/**
-		 * 获取列表项中固定的列
+		 * 创建列天
+		 * 
+		 * @return
+		 */
+		protected abstract ViewGroup createListItemLayout();
+
+		/**
+		 * 创建列表项中固定的列
 		 * 
 		 * @param position
 		 * @param viewHolder
@@ -280,7 +287,7 @@ public class ScrollListView extends RelativeLayout
 		 * @return
 		 */
 		protected abstract View createListItemFixView(int position,
-		        T viewHolder, ViewGroup parent);
+		        T viewHolder);
 
 		/**
 		 * 获取列表项中可移动的列
@@ -291,7 +298,15 @@ public class ScrollListView extends RelativeLayout
 		 * @return
 		 */
 		protected abstract View createListItemMoveView(int position,
-		        T viewHolder, ViewGroup parent);
+		        T viewHolder);
+
+		/**
+		 * 创建列头布局
+		 * 
+		 * @param context
+		 * @return
+		 */
+		protected abstract ViewGroup createHeaderLayout();
 
 		/**
 		 * 创建列头固定视图
@@ -299,7 +314,7 @@ public class ScrollListView extends RelativeLayout
 		 * @param context
 		 * @return
 		 */
-		protected abstract View createTitleFixView(Context context);
+		protected abstract View createHeaderFixView();
 
 		/**
 		 * 创建列头可移动视图
@@ -307,14 +322,14 @@ public class ScrollListView extends RelativeLayout
 		 * @param context
 		 * @return
 		 */
-		protected abstract View createTitleMoveView(Context context);
+		protected abstract View createHeaderMoveView();
 
 		/**
 		 * 创建ListView
 		 * 
 		 * @return
 		 */
-		protected abstract ListView createListView(Context context);
+		protected abstract ListView createListView();
 
 		/**
 		 * 获取ViewHolder

@@ -23,12 +23,19 @@ public class AppActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main3);
 		ScrollListView slv = (ScrollListView) findViewById(R.id.slv);
-		slv.setAdapter(new ListAdpater());
+		slv.setAdapter(new ListAdpater(this));
 	}
 
 	public static class ListAdpater extends
 	        ScrollListViewAdapter<ListViewHolder>
 	{
+		private Context context;
+
+		public ListAdpater(Context context)
+		{
+			this.context = context;
+		}
+
 		@Override
 		public int getCount()
 		{
@@ -56,7 +63,7 @@ public class AppActivity extends Activity
 		private ListView lv = null;
 
 		@Override
-		protected View createTitleFixView(Context context)
+		protected View createHeaderFixView()
 		{
 			TextView tv = new TextView(context);
 			tv.setText("AAAAAAAAAAAAAAAA");
@@ -67,7 +74,7 @@ public class AppActivity extends Activity
 		}
 
 		@Override
-		protected View createTitleMoveView(Context context)
+		protected View createHeaderMoveView()
 		{
 			LinearLayout ll = new LinearLayout(context);
 			TextView tv2 = null;
@@ -83,7 +90,7 @@ public class AppActivity extends Activity
 		}
 
 		@Override
-		protected ListView createListView(Context context)
+		protected ListView createListView()
 		{
 			lv = new ListView(context);
 			lv.setDividerHeight(1);
@@ -102,11 +109,11 @@ public class AppActivity extends Activity
 
 		@Override
 		protected View createListItemFixView(int postion,
-		        ListViewHolder viewHolder, ViewGroup parent)
+		        ListViewHolder viewHolder)
 		{
-			LinearLayout ll = new LinearLayout(parent.getContext());
+			LinearLayout ll = new LinearLayout(context);
 
-			TextView tv = new TextView(parent.getContext());
+			TextView tv = new TextView(context);
 			tv.setText("Text1");
 			ll.addView(tv, 100, LayoutParams.WRAP_CONTENT);
 			return ll;
@@ -114,13 +121,13 @@ public class AppActivity extends Activity
 
 		@Override
 		protected View createListItemMoveView(int postion,
-		        ListViewHolder viewHolder, ViewGroup parent)
+		        ListViewHolder viewHolder)
 		{
-			LinearLayout ll = new LinearLayout(parent.getContext());
+			LinearLayout ll = new LinearLayout(context);
 			TextView tv2 = null;
 			for (int index = 0; index < 5; index++)
 			{
-				tv2 = new TextView(parent.getContext());
+				tv2 = new TextView(context);
 				tv2.setText("content:" + index);
 				tv2.setBackgroundColor(Color.YELLOW);
 				ll.addView(tv2, 150, LayoutParams.WRAP_CONTENT);
@@ -134,6 +141,19 @@ public class AppActivity extends Activity
 			return null;
 		}
 
+		@Override
+		protected ViewGroup createHeaderLayout()
+		{
+			LinearLayout ll = new LinearLayout(context);
+			return ll;
+		}
+
+		@Override
+		protected ViewGroup createListItemLayout()
+		{
+			LinearLayout ll = new LinearLayout(context);
+			return ll;
+		}
 	}
 
 	public static class ListViewHolder extends ViewHolder
